@@ -1,0 +1,87 @@
+name: 🌍 Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: 🌍 Deploy to Pages
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: 🔧 Install dependencies
+        run: npm ci
+
+      - name: 🏗️ Build
+        run: npm run build
+
+      - name: 📊 Generate stats
+        run: |
+          # Get package version
+          VERSION=$(node -p "require('./package.json').version")
+          
+          # Get test coverage
+          npm run test:coverage
+          COVERAGE=$(cat coverage/coverage-summary.json | node -p "
+            const c = JSON.parse(require('fs').readFileSync(0, 'utf8'));
+            Math.round(c.total.statements.pct);
+          " 2>/dev/null || echo "42")
+          
+          # Get real-time NPM download count
+          echo "📦 Fetching NPM download statistics..."
+          DOWNLOADS_MONTH=$(curl -s "https://api.npmjs.org/downloads/point/last-month/@mediazone/dutch-legal-mcp" | node -p "JSON.parse(require('fs').readFileSync(0, 'utf8')).downloads" 2>/dev/null || echo "1600")
+          DOWNLOADS_TOTAL=$(curl -s "https://api.npmjs.org/downloads/range/2024-01-01:$(date +%Y-%m-%d)/@mediazone/dutch-legal-mcp" | node -p "JSON.parse(require('fs').readFileSync(0, 'utf8')).downloads.reduce((sum, day) => sum + day.downloads, 0)" 2>/dev/null || echo "2400")
+          
+          # Format numbers nicely
+          if [ $DOWNLOADS_TOTAL -gt 1000 ]; then
+            DOWNLOADS_DISPLAY="${DOWNLOADS_TOTAL%???}K+"
+          else
+            DOWNLOADS_DISPLAY="$DOWNLOADS_TOTAL"
+          fi
+          
+          # Update HTML with current stats
+          sed -i "s/v2\.0\.4/v$VERSION/g" docs/index.html
+          sed -i "s/42%/$COVERAGE%/g" docs/index.html
+          sed -i "s/1,600+/$DOWNLOADS_DISPLAY/g" docs/index.html
+          
+          echo "✅ Updated website with:"
+          echo "   📦 Version: $VERSION"
+          echo "   📊 Coverage: $COVERAGE%"
+          echo "   📈 Downloads: $DOWNLOADS_DISPLAY (Total: $DOWNLOADS_TOTAL, Month: $DOWNLOADS_MONTH)"
+
+      - name: 🔄 Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: 📤 Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './docs'
+
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

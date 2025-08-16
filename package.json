@@ -1,0 +1,103 @@
+{
+  "name": "@mediazone/dutch-legal-mcp",
+  "version": "2.0.12",
+  "description": "🇳🇱⚖️ First comprehensive Dutch Legal MCP server - Search 800K+ court cases, GDPR compliance, EU AI Act guidance",
+  "main": "dist/main.js",
+  "bin": {
+    "dutch-legal-mcp": "dist/main.js",
+    "dl-legal": "dist/main.js",
+    "legal": "dist/main.js"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/main.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:ci": "jest --ci --coverage --watchAll=false",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "type-check": "tsc --noEmit",
+    "validate": "npm run type-check && npm run lint && npm run test:ci",
+    "version": "node scripts/version-hook.js && npm run build",
+    "postversion": "git push && git push --tags",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run validate && npm run build",
+    "sync-version": "node scripts/update-version.js",
+    "audit": "npm audit --audit-level=high",
+    "security-check": "npm audit && npm outdated",
+    "postinstall": "echo '🇳🇱⚖️ Dutch Legal MCP installed! Add to Claude: claude mcp add dutch-legal @mediazone/dutch-legal-mcp'",
+    "install": "echo 'Installing Dutch Legal MCP...'",
+    "preinstall": "echo 'Note: If you encounter permission errors, try: npm install --no-fund --no-audit or use npx @mediazone/dutch-legal-mcp instead'"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "dutch-law",
+    "legal-tech",
+    "gdpr",
+    "gdpr-compliance",
+    "eu-ai-act",
+    "rechtspraak",
+    "compliance",
+    "netherlands",
+    "legal-research",
+    "court-cases",
+    "dutch-legal",
+    "privacy-law",
+    "claude-mcp",
+    "ai-compliance",
+    "data-protection",
+    "legal-analysis"
+  ],
+  "author": {
+    "name": "Mediazone.nl",
+    "url": "https://mediazone.nl"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mediazone/dutch-legal-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mediazone/dutch-legal-mcp/issues"
+  },
+  "homepage": "https://github.com/mediazone/dutch-legal-mcp#readme",
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/mediazone"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.6.0",
+    "axios": "^1.6.8",
+    "xml2js": "^0.6.2",
+    "date-fns": "^3.3.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "@types/xml2js": "^0.4.14",
+    "@typescript-eslint/eslint-plugin": "^7.1.1",
+    "@typescript-eslint/parser": "^7.1.1",
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.12",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.4.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "preferGlobal": false,
+  "publishConfig": {
+    "access": "public"
+  }
+}

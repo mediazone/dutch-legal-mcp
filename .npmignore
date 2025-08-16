@@ -1,0 +1,52 @@
+# Source files - alleen dist/ publiceren
+src/
+tsconfig.json
+
+# Development files
+.vscode/
+.github/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+tests/
+coverage/
+.nyc_output/
+*.test.*
+*.spec.*
+
+# Documentation (behouden README.md)
+docs/
+PROJECT_HISTORY.md
+MCP_CONFIGURATION.md
+
+# Marketing content (private)
+MARKETING.md
+marketing/
+*-launch-post.md
+*-campaign.md
+
+# Environment
+.env*
+
+# Dependencies
+node_modules/
+
+# Build artifacts
+*.tgz
+*.tar.gz
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
