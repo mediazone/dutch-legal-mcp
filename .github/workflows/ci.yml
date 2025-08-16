@@ -120,7 +120,14 @@ jobs:
         
       - name: Create git tag
         run: |
-          echo "Creating tag v$VERSION"
-          git tag "v$VERSION"
-          git push origin "v$VERSION"
+          echo "Checking if tag v$VERSION exists..."
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "Tag v$VERSION already exists locally - skipping"
+          elif git ls-remote --tags origin | grep "refs/tags/v$VERSION" >/dev/null 2>&1; then
+            echo "Tag v$VERSION already exists on remote - skipping"
+          else
+            echo "Creating new tag v$VERSION"
+            git tag "v$VERSION"
+            git push origin "v$VERSION"
+          fi
 
