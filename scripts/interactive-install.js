@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { createInterface } from 'readline';
-import { writeFileSync, existsSync, readFileSync } from 'fs';
+import { writeFileSync, readFileSync } from 'fs';
 import { homedir } from 'os';
 import { join } from 'path';
 
@@ -27,8 +27,13 @@ function addToShellProfile(envVars) {
   }
 
   let content = '';
-  if (existsSync(profileFile)) {
+  try {
     content = readFileSync(profileFile, 'utf8');
+  } catch (error) {
+    // File doesn't exist or can't be read - start with empty content
+    if (error.code !== 'ENOENT') {
+      throw error; // Re-throw if it's not a "file not found" error
+    }
   }
 
   // Remove existing Dutch Legal MCP configuration
