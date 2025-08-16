@@ -27,7 +27,8 @@ abstract class BaseUseCase {
   protected container = DIContainer.getInstance();
 }
 
-// Case Law Search Use Case
+// Case Law Search Use Case - USER-CONFIGURABLE ENDPOINTS
+// User is responsible for providing legitimate court data API endpoints
 export class CaseLawSearchUseCase extends BaseUseCase {
   @withErrorHandling
   async execute(criteria: SearchCriteria): Promise<readonly CourtCase[]> {
@@ -41,7 +42,7 @@ export class CaseLawSearchUseCase extends BaseUseCase {
       timestamp: new Date(),
     };
 
-    return service.search(request);
+    return service.search(request, criteria.baseUrl);
   }
 
   private generateId(): string {
@@ -115,11 +116,13 @@ export class RiskAnalysisUseCase extends BaseUseCase {
   }
 }
 
-// DPA Updates Use Case  
+// DPA Updates Use Case - PLACEHOLDER/ROADMAP FEATURE
+// Returns mock data for development/testing until real API integration is available
 export class DPAUpdatesUseCase extends BaseUseCase {
   @withErrorHandling
   async execute(category?: string, limit?: number): Promise<readonly DPAUpdate[]> {
     const service = this.container.resolve<DPAService>(TOKENS.DPA_SERVICE);
+    // Note: Current implementation returns sample data - not real DPA updates
     return service.getUpdates(category, limit);
   }
 }

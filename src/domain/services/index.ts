@@ -16,8 +16,8 @@ export interface ComplianceService {
 }
 
 export interface CaseLawService {
-  search(request: LegalRequest): Promise<readonly CourtCase[]>;
-  getDetails(ecli: string): Promise<CourtCase>;
+  search(request: LegalRequest, baseUrl?: string): Promise<readonly CourtCase[]>;
+  getDetails(ecli: string, baseUrl?: string): Promise<CourtCase>;
 }
 
 export interface RiskAnalysisService {
@@ -45,6 +45,7 @@ export interface SearchCriteria {
   readonly dateFrom?: string;
   readonly dateTo?: string;
   readonly maxResults?: number;
+  readonly baseUrl?: string; // User-provided court data endpoint
 }
 
 export interface GDPRCriteria {

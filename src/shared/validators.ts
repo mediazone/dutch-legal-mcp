@@ -18,6 +18,7 @@ export const CaseLawSearchSchema = LegalRequestSchema.extend({
   dateTo: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format').optional(),
   maxResults: z.number().min(1).max(50).optional().default(10),
   subject: z.array(z.string()).optional(),
+  baseUrl: z.string().url('Invalid URL format').optional(),
 });
 
 // GDPR compliance schema

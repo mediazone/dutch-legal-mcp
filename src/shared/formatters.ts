@@ -28,7 +28,8 @@ export const formatCourtCases = (cases: readonly CourtCase[]): string => {
     return 'No court decisions found. Try broader search terms or different keywords.';
   }
 
-  let result = `# Dutch Case Law Results\n\n`;
+  let result = `# Court Case Law Results\n\n`;
+  result += `⚖️ **Disclaimer:** User is responsible for compliance with court data API terms of service.\n\n`;
   result += `**Found:** ${cases.length} decisions\n\n`;
 
   cases.forEach((case_, index) => {
@@ -140,10 +141,11 @@ export const formatRiskAssessment = (assessment: RiskAssessment): string => {
   return output;
 };
 
-// Format DPA updates
+// Format DPA updates - PLACEHOLDER/ROADMAP FEATURE
 export const formatDPAUpdates = (updates: readonly DPAUpdate[]): string => {
-  let output = `# Dutch DPA Updates\n\n`;
-  output += `**Updates Found:** ${updates.length}\n\n`;
+  let output = `# Dutch DPA Updates (SAMPLE DATA)\n\n`;
+  output += `⚠️ **Note:** This feature currently returns mock data for development purposes.\n\n`;
+  output += `**Sample Updates Found:** ${updates.length}\n\n`;
 
   updates.forEach((update, index) => {
     const impactIcon = update.impact === 'high' ? '🔥' : 

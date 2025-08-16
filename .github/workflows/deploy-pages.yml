@@ -55,7 +55,7 @@ jobs:
           # Get real-time NPM download count
           echo "📦 Fetching NPM download statistics..."
           DOWNLOADS_MONTH=$(curl -s "https://api.npmjs.org/downloads/point/last-month/@mediazone/dutch-legal-mcp" | node -p "JSON.parse(require('fs').readFileSync(0, 'utf8')).downloads" 2>/dev/null || echo "1600")
-          DOWNLOADS_TOTAL=$(curl -s "https://api.npmjs.org/downloads/range/2024-01-01:$(date +%Y-%m-%d)/@mediazone/dutch-legal-mcp" | node -p "JSON.parse(require('fs').readFileSync(0, 'utf8')).downloads.reduce((sum, day) => sum + day.downloads, 0)" 2>/dev/null || echo "2400")
+          DOWNLOADS_TOTAL=$(curl -s "https://api.npmjs.org/downloads/range/2025-01-01:$(date +%Y-%m-%d)/@mediazone/dutch-legal-mcp" | node -p "JSON.parse(require('fs').readFileSync(0, 'utf8')).downloads.reduce((sum, day) => sum + day.downloads, 0)" 2>/dev/null || echo "2400")
           
           # Format numbers nicely
           if [ $DOWNLOADS_TOTAL -gt 1000 ]; then

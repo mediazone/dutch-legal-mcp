@@ -28,6 +28,19 @@ import {
 } from './infrastructure/services.js';
 import { VERSION } from './version.js';
 
+// Security disclaimer - always shown
+function showLegalDisclaimer(): void {
+  console.error('⚠️  LEGAL DISCLAIMER: You are fully responsible for:');
+  console.error('   • ALL actions performed by this Dutch Legal MCP tool');
+  console.error('   • Compliance with API terms of service');
+  console.error('   • Verifying data accuracy and legal authority');
+  console.error('   • Ensuring legitimate use of data sources');
+  console.error('   • All legal implications and consequences of your usage');
+  console.error('   • Understanding this tool provides research assistance only - not legal advice');
+  console.error('   • Any damages, liabilities, or legal issues arising from usage');
+  console.error('');
+}
+
 // Dependency Injection Setup
 function setupDependencies(): void {
   const container = DIContainer.getInstance();
@@ -47,6 +60,9 @@ class DutchLegalMCPServer {
   private toolRegistry: ToolRegistry;
 
   constructor() {
+    // Always show legal disclaimer
+    showLegalDisclaimer();
+    
     setupDependencies();
     
     this.toolRegistry = DIContainer.getInstance().resolve<ToolRegistry>(TOKENS.TOOL_REGISTRY);
@@ -108,7 +124,18 @@ class DutchLegalMCPServer {
     console.error(`🇳🇱⚖️ Dutch Legal MCP Server v${VERSION} started`);
     console.error('📚 5 legal tools available');
     console.error('🚀 Clean architecture with DI and design patterns');
-    console.error('🌐 Connected to: rechtspraak.nl & autoriteitpersoonsgegevens.nl APIs');
+    
+    // Show which endpoints are being used
+    const apiUrl = process.env.DUTCH_LEGAL_API_BASE_URL || 'https://data.rechtspraak.nl/uitspraken';
+    const viewUrl = process.env.DUTCH_LEGAL_VIEW_BASE_URL || 'https://uitspraken.rechtspraak.nl';
+    const isDefault = !process.env.DUTCH_LEGAL_API_BASE_URL && !process.env.DUTCH_LEGAL_VIEW_BASE_URL;
+    
+    if (isDefault) {
+      console.error('🌐 Using Dutch government APIs (rechtspraak.nl)');
+    } else {
+      console.error(`🌐 Using configured endpoints: ${new URL(apiUrl).hostname}, ${new URL(viewUrl).hostname}`);
+    }
+    
     console.error('⚖️  Legal research assistance only - not legal advice');
     console.error('⚡ Ready for legal analysis requests');
   }

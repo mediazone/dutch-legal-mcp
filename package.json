@@ -5,8 +5,9 @@
   "main": "dist/main.js",
   "bin": {
     "dutch-legal-mcp": "dist/main.js",
+    "dutch-legal": "dist/main.js",
     "dl-legal": "dist/main.js",
-    "legal": "dist/main.js"
+    "dutch-legal-setup": "scripts/interactive-install.js"
   },
   "type": "module",
   "scripts": {

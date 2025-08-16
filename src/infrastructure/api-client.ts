@@ -12,7 +12,7 @@ import { timeout } from '../shared/utils.js';
 
 // Simple cache interface
 interface CacheEntry {
-  data: any;
+  data: unknown;
   timestamp: number;
   etag?: string;
 }
@@ -44,6 +44,8 @@ export class ApiClient {
     baseDelay: 1000,
     maxDelay: 5000
   };
+  // Rate limiting: Built-in retry logic with exponential backoff
+  // Respects HTTP 429 responses and implements cache to reduce requests
 
   constructor(baseURL?: string) {
     this.client = axios.create({
@@ -85,15 +87,16 @@ export class ApiClient {
   ): Promise<T> {
     try {
       return await requestFn();
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (retryCount >= this.retryOptions.maxRetries) {
         throw error;
       }
 
       // Retry on network errors or 5xx status codes
-      const shouldRetry = !error.response || 
-        (error.response.status >= 500 && error.response.status <= 599) ||
-        error.response.status === 429;
+      const errorWithResponse = error as { response?: { status: number } };
+      const shouldRetry = !errorWithResponse.response || 
+        (errorWithResponse.response.status >= 500 && errorWithResponse.response.status <= 599) ||
+        errorWithResponse.response.status === 429;
 
       if (!shouldRetry) {
         throw error;
@@ -127,7 +130,7 @@ export class ApiClient {
 
     return {
       success: true,
-      data: entry.data,
+      data: entry.data as T,
       metadata: {
         timestamp: new Date(entry.timestamp).toISOString(),
       },

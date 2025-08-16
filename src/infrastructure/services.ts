@@ -26,15 +26,18 @@ import {
 } from '../shared/constants.js';
 import { formatDate } from '../shared/utils.js';
 
-// Case Law Service Implementation
+// Case Law Service Implementation - USER-CONFIGURABLE ENDPOINTS
+// User is responsible for providing legitimate court data endpoints
 export class RechtspraakCaseLawService implements CaseLawService {
-  private searchClient = ApiClientFactory.getClient('https://data.rechtspraak.nl/uitspraken/zoeken');
-  private contentClient = ApiClientFactory.getClient('https://data.rechtspraak.nl/uitspraken/content');
+  private readonly defaultBaseUrl = process.env.DUTCH_LEGAL_API_BASE_URL || 'https://data.rechtspraak.nl/uitspraken';
+  private readonly defaultViewUrl = process.env.DUTCH_LEGAL_VIEW_BASE_URL || 'https://uitspraken.rechtspraak.nl';
 
-  async search(request: LegalRequest): Promise<readonly CourtCase[]> {
+  async search(request: LegalRequest, baseUrl?: string): Promise<readonly CourtCase[]> {
+    const apiBaseUrl = baseUrl || this.defaultBaseUrl;
+    const searchClient = ApiClientFactory.getClient(`${apiBaseUrl}/zoeken`);
     // Step 1: Search for ECLIs
     const params = this.buildSearchParams(request.parameters);
-    const searchResponse = await this.searchClient.getXML<string>('', { params });
+    const searchResponse = await searchClient.getXML<string>('', { params });
 
     if (!searchResponse.success || !searchResponse.data) {
       throw new Error(searchResponse.error || 'Failed to search cases');
@@ -48,7 +51,7 @@ export class RechtspraakCaseLawService implements CaseLawService {
     
     for (let i = 0; i < maxResults; i++) {
       try {
-        const caseDetail = await this.getDetails(eclis[i]);
+        const caseDetail = await this.getDetails(eclis[i], baseUrl);
         cases.push(caseDetail);
       } catch (error) {
         console.error(`Failed to get details for ${eclis[i]}:`, error);
@@ -58,8 +61,11 @@ export class RechtspraakCaseLawService implements CaseLawService {
     return cases;
   }
 
-  async getDetails(ecli: string): Promise<CourtCase> {
-    const response = await this.contentClient.getXML<string>('', { 
+  async getDetails(ecli: string, baseUrl?: string): Promise<CourtCase> {
+    const apiBaseUrl = baseUrl || this.defaultBaseUrl;
+    const contentClient = ApiClientFactory.getClient(`${apiBaseUrl}/content`);
+    
+    const response = await contentClient.getXML<string>('', { 
       params: { id: ecli } 
     });
 
@@ -72,7 +78,7 @@ export class RechtspraakCaseLawService implements CaseLawService {
 
   private extractECLIsFromFeed(feedData: unknown): string[] {
     try {
-      const data = feedData as any;
+      const data = feedData as { feed?: { entry?: Record<string, unknown>[] } };
       const entries = data?.feed?.entry || [];
       return entries.map((entry: Record<string, unknown>) => {
         const id = entry.id;
@@ -103,7 +109,7 @@ export class RechtspraakCaseLawService implements CaseLawService {
   private parseContentResponse(xmlData: unknown): CourtCase {
     try {
       // For content response, the data structure is different
-      const data = xmlData as any;
+      const data = xmlData as { 'open-rechtspraak'?: { 'rdf:RDF'?: { 'rdf:Description'?: Record<string, unknown> } } };
       const rdf = data['open-rechtspraak']?.['rdf:RDF']?.['rdf:Description'];
       if (!rdf) {
         throw new Error('Invalid content response format');
@@ -117,14 +123,14 @@ export class RechtspraakCaseLawService implements CaseLawService {
   }
 
   private parseRDFEntry(rdf: Record<string, unknown>): CourtCase {
-    const getValue = (field: any): string => {
-      if (Array.isArray(field)) return field[0]?._ || field[0] || '';
-      return field?._ || field || '';
+    const getValue = (field: unknown): string => {
+      if (Array.isArray(field)) return (field[0] as { _?: string })?._ || String(field[0]) || '';
+      return (field as { _?: string })?._ || String(field) || '';
     };
 
-    const getArray = (field: any): string[] => {
+    const getArray = (field: unknown): string[] => {
       if (Array.isArray(field)) {
-        return field.map(item => item?._ || item || '').filter(Boolean);
+        return field.map(item => (item as { _?: string })?._ || String(item) || '').filter(Boolean);
       }
       return field ? [getValue(field)] : [];
     };
@@ -138,7 +144,7 @@ export class RechtspraakCaseLawService implements CaseLawService {
     
     // Determine precedent value
     const precedentValue = this.determinePrecedentValue(court, subjects);
-    const url = `https://uitspraken.rechtspraak.nl/inziendocument?id=${encodeURIComponent(ecli)}`;
+    const url = `${this.defaultViewUrl}/inziendocument?id=${encodeURIComponent(ecli)}`;
 
     return {
       ecli,
@@ -454,26 +460,30 @@ export class RiskAnalysisServiceImpl implements RiskAnalysisService {
   }
 }
 
-// DPA Service Implementation (Mock for now)
+// DPA Service Implementation - PLACEHOLDER/ROADMAP FEATURE
+// TODO: Replace with real API integration when Autoriteit Persoonsgegevens provides public API
+// Currently returns mock data for development and testing purposes
 export class DPAServiceImpl implements DPAService {
   async getUpdates(category = 'all', limit = 10): Promise<readonly DPAUpdate[]> {
-    // Mock implementation - in production this would fetch real data
+    // MOCK IMPLEMENTATION - Returns static test data
+    // Real implementation would require web scraping or official API from autoriteitpersoonsgegevens.nl
+    // WARNING: These are sample/test updates - NOT real DPA data
     const mockUpdates: DPAUpdate[] = [
       {
-        id: 'dpa-2024-001',
-        title: 'New Guidelines on AI System Data Processing',
-        date: '2024-01-15',
+        id: 'dpa-mock-001',
+        title: '[SAMPLE] New Guidelines on AI System Data Processing',
+        date: '2025-01-15',
         category: 'guidance',
-        summary: 'Comprehensive guidelines on how GDPR applies to AI systems, including requirements for algorithmic transparency.',
+        summary: '[MOCK DATA] Comprehensive guidelines on how GDPR applies to AI systems, including requirements for algorithmic transparency.',
         impact: 'high',
         url: 'https://autoriteitpersoonsgegevens.nl/nl/onderwerpen/artificial-intelligence-ai',
       },
       {
-        id: 'dpa-2024-002', 
-        title: 'Record €4.75M Fine for Discriminatory Algorithm Use',
-        date: '2024-01-10',
+        id: 'dpa-mock-002', 
+        title: '[SAMPLE] Record €4.75M Fine for Discriminatory Algorithm Use',
+        date: '2025-01-10',
         category: 'fine',
-        summary: 'Major penalty imposed on government agency for using discriminatory algorithms in benefit fraud detection.',
+        summary: '[MOCK DATA] Major penalty imposed on government agency for using discriminatory algorithms in benefit fraud detection.',
         impact: 'high',
         url: 'https://autoriteitpersoonsgegevens.nl/nl/nieuws/boete-fraudedetectie',
       },
