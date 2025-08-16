@@ -1,6 +1,6 @@
 {
   "name": "@mediazone/dutch-legal-mcp",
-  "version": "2.0.12",
+  "version": "2.0.13",
   "description": "🇳🇱⚖️ First comprehensive Dutch Legal MCP server - Search 800K+ court cases, GDPR compliance, EU AI Act guidance",
   "main": "dist/main.js",
   "bin": {
