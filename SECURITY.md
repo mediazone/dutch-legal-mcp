@@ -44,19 +44,19 @@ If you cannot use GitHub's reporting feature, you can:
    - Potential impact
    - Suggested fix (if any)
 
-## ⏱️ Response Timeline
+## ⏱️ Response Commitment
 
-- **Initial Response:** Within 48 hours
-- **Triage:** Within 1 week
-- **Resolution:** Depends on severity
-  - **Critical:** Within 7 days
-  - **High:** Within 14 days
-  - **Medium:** Within 30 days
-  - **Low:** Next regular release
+We will make **reasonable commercial efforts** to:
+- **Acknowledge reports:** Target 48 hours (best effort only)
+- **Investigate issues:** Through normal development processes
+- **Provide updates:** On remediation progress when available
+- **Release fixes:** Via standard release cycles
+
+**Important:** Response times are estimates only and do not constitute binding commitments, service level agreements, or legal obligations.
 
 ## 🎯 Security Scope
 
-### In Scope
+### What We Monitor
 - Code execution vulnerabilities
 - Data injection attacks
 - Authentication/authorization bypasses
@@ -69,6 +69,7 @@ If you cannot use GitHub's reporting feature, you can:
 - Denial of service attacks on public APIs
 - Issues in dependencies that don't affect this project
 - Legal compliance questions (these are user responsibility)
+- Guaranteed response times or resolution deadlines
 
 ## 🛠️ Security Measures
 
@@ -103,9 +104,21 @@ This tool accesses public legal data from:
 4. **Secure your environment**: Protect your API keys and credentials
 5. **Monitor usage**: Be aware of what data you're processing
 
-## 🚫 No Warranty
+## 🚫 No Warranty & Limitation of Liability
 
-This software is provided "AS IS" without any warranties. Authors are not liable for any security issues, data loss, legal problems, or damages arising from usage.
+This software is provided "AS IS" without any warranties of any kind, express or implied.
+
+**The authors shall NOT be liable for:**
+- Direct, indirect, incidental, or consequential damages
+- Business interruption or loss of profits  
+- Data loss, corruption, or security breaches
+- Legal fees, compliance costs, or regulatory penalties
+- Damages arising from security vulnerabilities or delayed fixes
+- Any damages exceeding €0 (zero euros)
+
+**Maximum liability is explicitly limited to €0.**
+
+Users acknowledge that security vulnerability disclosure and remediation are provided on a voluntary, best-effort basis without creating legal obligations or service commitments.
 
 ---
 
